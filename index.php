@@ -11,6 +11,9 @@
 		case "users":
 		$controller = new c_enum("users");
 		break;
+		case "auth":
+		$controller = new c_auth();
+		break;
 		default:
 		$controller = new c_controller;
 	}

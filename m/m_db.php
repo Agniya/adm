@@ -19,6 +19,64 @@ class m_db
 			exit;
 		}	
 	}
+	public function create_user($table,$values)
+	{
+		$query = "INSERT INTO " . $table .
+                " (username, password,email,phone) " .
+                " VALUES (:username, :password, :email, :phone)";
+        $stmnt = $this->pdo->prepare($query);
+        $params = array(
+            "username" => $values['username'],
+			"password" => $values['password'],
+			"email" => $values['email'],
+			"phone" => $values['phone']
+        );
+        $stmnt->execute($params);
+        return $this->pdo->lastInsertId();
+	}
+	public function get_user($table,$email)
+	{
+		$query = "SELECT * FROM " .$table .
+        " WHERE email = :email";
+		$stmt = $this->pdo->prepare($query);
+        $params = array("email" => $email);
+		$stmt->execute($params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (empty($result)) ? false : $result;
+	}
+	public function add_uid($table,$uid,$id_user){
+		$query = "INSERT INTO " . $table .
+                " (id_user, uid) " .
+                " VALUES (:id_user, :uid)";
+        $stmnt = $this->pdo->prepare($query);
+        $params = array(
+            "id_user" => $id_user,
+			"uid" => $uid
+	    );
+        $stmnt->execute($params);
+        return $this->pdo->lastInsertId();
+	}
+	public function check_uid($table,$uid){
+		$query = "SELECT * FROM " .$table .
+        " WHERE uid = :uid";
+		$stmt = $this->pdo->prepare($query);
+        $params = array("uid" => $uid);
+		$stmt->execute($params);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (empty($result)) ? false : $result;
+	}
+	public function delete_uid($table,$uid){
+		$query ="DELETE FROM ".$table.
+		" WHERE uid=:uid";
+		$stmt = $this->pdo->prepare($query);
+		$params = array("uid" => $uid);		
+		$stmt->execute($params);
+		if ($stmt->rowCount() < 1) {
+           throw new Exception(
+            "oops");
+		}
+        return true;
+	}
 	public function create_app($table,$values)
 	{
 		$query = "INSERT INTO " . $table .
