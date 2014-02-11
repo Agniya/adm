@@ -8,39 +8,44 @@
 		</div>
 		<div class="form_block">
 			<label for="System Requirements">System Requirements</label></br>
-			<div>
-				<?if(isset($vars['OS'])&&isset($vars['CPU'])):?>
-					<?foreach($vars['OS'] as $k=>$v):?>
+				<?if(isset($vars['OS'])&&isset($vars['CPU'])&&!empty($vars['OS'])&&!empty($vars['CPU'])):?>
+					<div class="block40">
+					<?for($i=0;$i<count($vars['OS']);$i++):?>
+					<?foreach($vars['OS'][$i] as $k=>$v):?>
 						<?if($v==1):?>
 						<input type="radio" name="OS" value="<?=$k?>" checked/><?=$k?><br />
 						<?else:?>
 						<input type="radio" name="OS" value="<?=$k?>"><?=$k?><br />	
 						<?endif?>
 					<?endforeach?>
+					<?endfor;?>
 					</div>
 					<div class="block40 padL">
-						<?foreach($vars['CPU'] as $k=>$v):?>
+					<?for($i=0;$i<count($vars['CPU']);$i++):?>
+						<?foreach($vars['CPU'][$i] as $k=>$v):?>
 						<?if($v==1):?>
-						<input type="radio" name="CPU[]" value="<?=$k?>" checked/><?=$k?><br />
+						<input type="checkbox" name="CPU[]" value="<?=$k?>" checked/><?=$k?><br />
 						<?else:?>
-						<input type="radio" name="CPU[]" value="<?=$k?>"><?=$k?><br />	
+						<input type="checkbox" name="CPU[]" value="<?=$k?>"><?=$k?><br />	
 						<?endif?>
 						<?endforeach?>
+					<?endfor;?>
 					</div>	
-				<?else:?>
+				<div class="clear"></div>	
+			<?else:?>
 				<div class="block40">
-					<input type="radio" name="OS" value="10.6"/>10.6 Snow Leopard<br />
-					<input type="radio" name="OS" value="10.7"/>10.7 Lion<br />
-					<input type="radio" name="OS" value="10.8"/>10.8 Mountain Lion<br />
+					<input type="radio" name="OS" value="10.6 Snow Leopard"/>10.6 Snow Leopard<br />
+					<input type="radio" name="OS" value="10.7 Lion"/>10.7 Lion<br />
+					<input type="radio" name="OS" value="10.8 Mountain Lion"/>10.8 Mountain Lion<br />
 				</div>
 				<div class="block40 padL">
-					<input type="checkbox" name="CPU[]" value="32"/>32-bit CPU support<br />
-					<input type="checkbox" name="CPU[]" value="64"/>64-bit CPU support<br />
+					<input type="checkbox" name="CPU[]" value="32-bit CPU support"/>32-bit CPU support<br />
+					<input type="checkbox" name="CPU[]" value="64-bit CPU support"/>64-bit CPU support<br />
 				</div>	
 				<?endif?>
 				<div class="clear"></div>				
-			</div>
 		</div>
+		
 		<div class="form_block">
 			<div class="block40">
 				<label for="version">Version</label></br>
@@ -78,8 +83,7 @@
 		</div>
 		<div class="form_block">
 			<label for="file">File</label></br>
-			<input type="file" class="small_input" id="file" name="file">
-			<!--<input type="submit" name="upload" value="UPLOAD">-->
+			<input type="file" class="small_input" id="file" name="file"><?=$vars['file']?>
 			</br>
 			<label for="link">Link to download</label></br>
 			<textarea class="middle_input" id="link" name="link"><?=$vars['link']?></textarea></br>

@@ -28,8 +28,8 @@ class m_db
 		 CREATE TABLE IF NOT EXISTS `applications` ( 
 		   `id` INT PRIMARY KEY AUTO_INCREMENT,
 		   `title` varchar(40) NOT NULL, 
-		   `OS` varchar(40) NOT NULL, 
-		   `CPU` varchar(40) NOT NULL, 
+		   `OS` varchar(250) NOT NULL, 
+		   `CPU` varchar(250) NOT NULL, 
 		   `version` varchar(40) NOT NULL DEFAULT '', 
 		   `bundle_id` varchar(40) NOT NULL DEFAULT '',
 			`renovation` varchar(40) NOT NULL DEFAULT '',
