@@ -2,13 +2,13 @@
 class c_enum extends c_controller
 {
 	private $db;
-	private $vars; //массив со значениями из базы по запрошенной сущности
+	private $vars; //РјР°СЃСЃРёРІ СЃРѕ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· Р±Р°Р·С‹ РїРѕ Р·Р°РїСЂРѕС€РµРЅРЅРѕР№ СЃСѓС‰РЅРѕСЃС‚Рё
 	private $entity;
 	
 	public function __construct($entity)
 	{
 		$this->db = new m_db;
-		$this->vars = $this->db->select_all($entity);
+		$this->vars = $this->db->select_all('applications');
 		$this->select_enum();
 	}
 	private function show_enum(){

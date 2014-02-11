@@ -15,7 +15,6 @@ class c_auth
 		$this->index();
 	}
 	private function index(){
-		//echo $this->a_m->make_view('v/auth_index.php');
 		$url_parse = parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH);
 		$uri_parts = explode('/',trim($url_parse,' /'));
 		if(isset($uri_parts[1])&&!empty($uri_parts[1]))

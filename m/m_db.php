@@ -17,29 +17,67 @@ class m_db
 		} catch (PDOException $e) {
 			trigger_error("Error: Failed to establish connection to database.");
 			exit;
-		}	
+		}
+		$this->create_apps();
+		$this->create_users();
+		$this->create_authed();
 	}
-	public function create_user($table,$values)
+	public function create_apps()
 	{
-		$query = "INSERT INTO " . $table .
-                " (username, password,email,phone) " .
-                " VALUES (:username, :password, :email, :phone)";
-        $stmnt = $this->pdo->prepare($query);
-        $params = array(
-            "username" => $values['username'],
-			"password" => $values['password'],
-			"email" => $values['email'],
-			"phone" => $values['phone']
-        );
-        $stmnt->execute($params);
-        return $this->pdo->lastInsertId();
+		$sql = "
+		 CREATE TABLE IF NOT EXISTS `applications` ( 
+		   `id` INT PRIMARY KEY AUTO_INCREMENT,
+		   `title` varchar(40) NOT NULL, 
+		   `OS` varchar(40) NOT NULL, 
+		   `CPU` varchar(40) NOT NULL, 
+		   `version` varchar(40) NOT NULL DEFAULT '', 
+		   `bundle_id` varchar(40) NOT NULL DEFAULT '',
+			`renovation` varchar(40) NOT NULL DEFAULT '',
+			`price` varchar(40) NOT NULL DEFAULT '',
+			`license` varchar(40) NOT NULL DEFAULT '',
+			`author` varchar(40) NOT NULL,
+			`site` varchar(40) NOT NULL DEFAULT '',
+			`file` varchar(40) NOT NULL DEFAULT '',
+			`link` varchar(40) NOT NULL DEFAULT '',
+			`description` varchar(250) NOT NULL DEFAULT '',
+			`novelty` varchar(250) NOT NULL DEFAULT '',
+			`release_notes` varchar(250) NOT NULL DEFAULT '',
+			`sys_notes` varchar(250) NOT NULL DEFAULT '',
+			`comments` varchar(250) NOT NULL DEFAULT ''		
+		    )"; 
+		$result = $this->pdo->prepare($sql); 
+		$result->execute();
+	}	
+	public function create_users()
+	{
+		$sql = "
+		 CREATE TABLE IF NOT EXISTS `users` ( 
+		   `id` INT PRIMARY KEY AUTO_INCREMENT,
+		   `username` varchar(40) NOT NULL,
+		   `password` varchar(40) NOT NULL,
+		   `email` varchar(40) NOT NULL,
+		   `phone` varchar(40) NOT NULL
+		 )"; 
+		$result = $this->pdo->prepare($sql); 
+		$result->execute();   
+	}
+	public function create_authed()
+	{
+		$sql = "
+		 CREATE TABLE IF NOT EXISTS `authed` ( 
+		   `id` INT PRIMARY KEY AUTO_INCREMENT,
+		   `id_user` INT NOT NULL,
+		   `uid` INT NOT NULL
+		 )"; 
+		$result = $this->pdo->prepare($sql); 
+		$result->execute();   
 	}
 	public function get_user($table,$email)
 	{
 		$query = "SELECT * FROM " .$table .
         " WHERE email = :email";
 		$stmt = $this->pdo->prepare($query);
-        $params = array("email" => $email);
+        $params = array("email" => mysql_real_escape_string($email));
 		$stmt->execute($params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (empty($result)) ? false : $result;
@@ -50,8 +88,8 @@ class m_db
                 " VALUES (:id_user, :uid)";
         $stmnt = $this->pdo->prepare($query);
         $params = array(
-            "id_user" => $id_user,
-			"uid" => $uid
+            "id_user" => mysql_real_escape_string($id_user),
+			"uid" => mysql_real_escape_string($uid)
 	    );
         $stmnt->execute($params);
         return $this->pdo->lastInsertId();
@@ -60,7 +98,7 @@ class m_db
 		$query = "SELECT * FROM " .$table .
         " WHERE uid = :uid";
 		$stmt = $this->pdo->prepare($query);
-        $params = array("uid" => $uid);
+        $params = array("uid" => mysql_real_escape_string($uid));
 		$stmt->execute($params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (empty($result)) ? false : $result;
@@ -69,49 +107,50 @@ class m_db
 		$query ="DELETE FROM ".$table.
 		" WHERE uid=:uid";
 		$stmt = $this->pdo->prepare($query);
-		$params = array("uid" => $uid);		
+		$params = array("uid" => mysql_real_escape_string($uid));		
 		$stmt->execute($params);
-		if ($stmt->rowCount() < 1) {
-           throw new Exception(
-            "oops");
+        return true;
+	}
+	public function create($table,$values)
+	{
+		$a = array_keys($values);
+		for($i=0;$i<count($a);$i++){
+			$a[$i] = ':'.$a[$i];
 		}
+		$val = implode(',',$a);
+		$query = "INSERT INTO " . $table."(".implode(',',array_keys($values)).") 
+		VALUES (".$val. ")";
+		$s = $this->pdo->prepare($query);
+		$params = array();
+		foreach($values as $k=>$v){
+			$params[$k]=mysql_real_escape_string(((trim($values[$k]))));
+		}
+		$s->execute($params);
+		return $this->pdo->lastInsertId();
+	}
+	public function update($table,$id,$values)
+	{
+   		$a = array_keys($values);
+		for($i=0;$i<count($a);$i++){
+			$a[$i] = $a[$i].'=?';
+		}
+		$query = 'UPDATE '.$table.' SET '.implode(',',$a).' WHERE id=?';
+		$result = $this->pdo->prepare($query );
+		$params=array();
+		foreach($values as $k=>$v){
+			array_push($params,mysql_real_escape_string(htmlspecialchars(trim($values[$k]))));
+		}
+		array_push($params,mysql_real_escape_string((htmlspecialchars(trim($id)))));
+		$result->execute($params);
         return true;
 	}
-	public function create_app($table,$values)
-	{
-		$query = "INSERT INTO " . $table .
-                " (title, description,author) " .
-                " VALUES (:title, :description, :author)";
-        $stmnt = $this->pdo->prepare($query);
-        $params = array(
-            "title" => $values['title'],
-			"description" => $values['description'],
-			"author" => $values['author']
-        );
-        $stmnt->execute($params);
-        return $this->pdo->lastInsertId();
-	}
-	public function update_app($table,$id,$values)
-	{
-   		$result = $this->pdo->prepare('UPDATE '.$table.' SET title=?, description=?, author=? WHERE id=?');
-		$result->execute(array($values['title'], $values['description'], $values['author'],$id));
-        if ($result->rowCount() < 1) {
-           throw new Exception(
-            "oops");
-        }
-        return true;
-	}
-	public function delete_app($table,$id)
+	public function delete($table,$id)
 	{
    		$query ="DELETE FROM ".$table.
 		" WHERE id=:id";
 		$stmt = $this->pdo->prepare($query);
-		$params = array("id" => $id);		
+		$params = array("id" => mysql_real_escape_string($id));		
 		$stmt->execute($params);
-		if ($stmt->rowCount() < 1) {
-           throw new Exception(
-            "oops");
-		}
         return true;
 	}
 	public function select($table,$id)
@@ -119,7 +158,7 @@ class m_db
 		$query = "SELECT * FROM " .$table .
         " WHERE id = :id";
 		$stmt = $this->pdo->prepare($query);
-        $params = array("id" => $id);
+        $params = array("id" => mysql_real_escape_string($id));
 		$stmt->execute($params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (empty($result)) ? false : $result;

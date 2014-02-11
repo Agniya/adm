@@ -9,16 +9,16 @@ class m_auth
 	{
 		$this->db = new m_db;
 	}
-	// âàëèäàöèÿ äàííûõ
+	// Ð²Ð°Ð»Ð¸Ð´Ð°Ñ†Ð¸Ñ Ð´Ð°Ð½Ð½Ñ‹Ñ…
 	public function validation($vars=array())
 	{
 		if(empty($vars))return false;
 		foreach($vars as $k=>$v){
 			$vars[$k]=mysql_real_escape_string(htmlspecialchars(trim($v)));
 		}
-		//Çàïðåò ïîëüçîâàòåëþ èñïîëüçîâàòü â ñâîåì èìåíè ëþáûå ñèìâîëû, êðîìå áóêâ ðóññêîãî è ëàòèíñêîãî àëôàâèòà, çíàêà "_" (ïîä÷åðê), ïðîáåëà è öèôð:
+		//Ð—Ð°Ð¿Ñ€ÐµÑ‚ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÑŽ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÑŒ Ð² ÑÐ²Ð¾ÐµÐ¼ Ð¸Ð¼ÐµÐ½Ð¸ Ð»ÑŽÐ±Ñ‹Ðµ ÑÐ¸Ð¼Ð²Ð¾Ð»Ñ‹, ÐºÑ€Ð¾Ð¼Ðµ Ð±ÑƒÐºÐ² Ñ€ÑƒÑÑÐºÐ¾Ð³Ð¾ Ð¸ Ð»Ð°Ñ‚Ð¸Ð½ÑÐºÐ¾Ð³Ð¾ Ð°Ð»Ñ„Ð°Ð²Ð¸Ñ‚Ð°, Ð·Ð½Ð°ÐºÐ° "_" (Ð¿Ð¾Ð´Ñ‡ÐµÑ€Ðº), Ð¿Ñ€Ð¾Ð±ÐµÐ»Ð° Ð¸ Ñ†Ð¸Ñ„Ñ€:
 		if (preg_match("/[^(\w)|(\x7F-\xFF)|(\s)]/",$vars['username'])){ echo 'error';}
-		//Äëÿ ïîëÿ ââîäà àäðåñà e-mail ðàçðåøåííûå ñèìâîëû çíàêè "@" è ".", óáåðåì ðóññêèå áóêâû è ïðîáåë:
+		//Ð”Ð»Ñ Ð¿Ð¾Ð»Ñ Ð²Ð²Ð¾Ð´Ð° Ð°Ð´Ñ€ÐµÑÐ° e-mail Ñ€Ð°Ð·Ñ€ÐµÑˆÐµÐ½Ð½Ñ‹Ðµ ÑÐ¸Ð¼Ð²Ð¾Ð»Ñ‹ Ð·Ð½Ð°ÐºÐ¸ "@" Ð¸ ".", ÑƒÐ±ÐµÑ€ÐµÐ¼ Ñ€ÑƒÑÑÐºÐ¸Ðµ Ð±ÑƒÐºÐ²Ñ‹ Ð¸ Ð¿Ñ€Ð¾Ð±ÐµÐ»:
 		if (preg_match("/[^(\w)|(\@)|(\.)]/",$vars['email'])){ echo 'error';}
 		$vars['password']= $this->make_pswd($vars['password']);
 		$vars['username']=substr($vars['username'],0,50);
@@ -29,12 +29,12 @@ class m_auth
 		$pswd = md5(md5($pswd));
 		return $pswd;
 	}
-	//ðåãèñòðàöèÿ
+	//Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð°Ñ†Ð¸Ñ
 	public function add_user($table,$vars=array()){
 		if($this->validation($vars))
-		$this->db->create_user($table,$this->validation($vars));
+		$this->db->create($table,$this->validation($vars));
 	}
-	//àâòîðèçàöèÿ
+	//Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð°Ñ†Ð¸Ñ
 	public function check_user($table,$vars=array()){
 		$vars = $this->validation($vars);
 		if($vars){
@@ -51,18 +51,18 @@ class m_auth
 		$uid=mt_rand(1,1000000);
 		return $uid;
 	}
-	//çàïèñü uid â òàáëèöó ñ àâòîðèçîâàííûìè
+	//Ð·Ð°Ð¿Ð¸ÑÑŒ uid Ð² Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñƒ Ñ Ð°Ð²Ñ‚Ð¾Ñ€Ð¸Ð·Ð¾Ð²Ð°Ð½Ð½Ñ‹Ð¼Ð¸
 	private function add_uid($table,$uid,$id_user){
 		if($this->db->add_uid($table,$uid,$id_user))return true;
 	}
-	//ïîèñê uid
+	//Ð¿Ð¾Ð¸ÑÐº uid
 	private function check_uid($table,$uid){
 		if($this->db->check_uid($table,$uid)) return true;
 	}
-	//ðàçëîãèíèòü
+	//Ñ€Ð°Ð·Ð»Ð¾Ð³Ð¸Ð½Ð¸Ñ‚ÑŒ
 	public function logout($uid){
-	//	if(!$this->db->check_uid($table,$uid)) return false;
-		//óáðàòü èç òàáëèöû ñåññèé 
+		if(!$this->db->check_uid($table,$uid)) return false;
+		//ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ð¸Ð· Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ ÑÐµÑÑÐ¸Ð¹ 
 		if($this->db->delete_uid('authed',$uid)){
 			unset($_SESSION['userid']);
 			session_destroy();

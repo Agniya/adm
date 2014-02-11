@@ -16,8 +16,8 @@
 		<?endif;?>
 	</head>
 	<body>
-		<a href="/auth/logout/<?=$uid?>">выйти</a><br/>
-		<a href="/apps">приложения</a>|<a href="/users">пользователи</a><br/>
+		<a href="/auth/logout/<?=$uid?>">РІС‹Р№С‚Рё</a><br/>
+		<a href="/apps">РїСЂРёР»РѕР¶РµРЅРёСЏ</a>|<a href="/users">РїРѕР»СЊР·РѕРІР°С‚РµР»Рё</a><br/>
 		<hr>
 		<?=$content?>
 	</body>

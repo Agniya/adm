@@ -1,3 +1,50 @@
+body{font-family:'Arial';}
 table{border: 1px solid black;}
 tr{border: 1px solid black;width:600px;height:30px;}
 td{border: 1px solid black;width:200px;height:30px;font-size:14px;line-height:25px}
+.application{
+	width: 50%;
+	margin: auto;
+	border: 1px solid grey;
+	border-radius: 5px;
+}
+.headline{
+	text-transform: uppercase;
+	color: grey;
+	border-bottom: 1px solid grey;
+	border-radius: 5px;
+	line-height: 55px;
+	padding-left: 5px;
+	font-size: 25px;
+}
+.form_block{
+	padding: 10px;
+	border-bottom: 1px solid grey;
+}
+.block40{float: left; width: 40%;padding:5px}				
+.clear{clear:both}	
+.padL{padding-left:60px;}
+radio{}							
+textarea{
+	border-bottom: 1px solid grey;
+	border-radius: 5px;
+}
+input{
+	border-bottom: 1px solid grey;
+	border-radius: 5px;
+	margin:10px;
+}
+label{font-size:20px;color:grey}
+.small_input{
+	width: 70%;
+	height: 20px;
+	margin-top: 5px;
+}
+.middle_input{
+	width: 99%;
+	height: 20px;
+	margin-top: 5px;
+}
+.max_input{height:100px}
+.check{}
+.radio{}
