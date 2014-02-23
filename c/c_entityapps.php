@@ -27,9 +27,7 @@ class c_entityapps extends c_controller
 			if($this->db->check_uid('authed',$_POST['uid']))
 			{
 				$vars = $_POST;
-				if(file_exists($_FILES['file']['tmp_name'])){
-					$vars['file']=$_FILES['file']['name'];
-				}	
+				unset($_POST['uid'],$_POST['submit']);
 				$vars = $this->prepare_data($vars);	
 				$this->db->create('applications', $vars);
 				header('Location:/apps');
@@ -37,29 +35,16 @@ class c_entityapps extends c_controller
 			}
 		}
 	}
-	private function parse_jsone($vars){
-		$vars = str_replace( array('"','\\','{','}'),'',$vars);	
-		$vars=explode(',',$vars);
-		$a=array();
-		for($i=0;$i<count($vars);$i++){
-			$vars[$i] = explode(':',$vars[$i]);
-			$a[$i][$vars[$i][0]] = $vars[$i][1];
-		}
-		return $a;
-	}
 	private function update($entity,$vars){
 		if($_SERVER['REQUEST_METHOD'] == 'GET'){
 		$vars['OS'] = $this->parse_jsone($vars['OS']);
 		$vars['CPU'] = $this->parse_jsone($vars['CPU']);
-		
 			$this->content = $this->make_view('v/entityapps.php', 
 			array('headline'=>'edit app','vars'=>$vars,'uid'=>$this->uid));
 		}else{
 			if($this->db->check_uid('authed',htmlspecialchars(trim($_POST['uid']))))
 			{
-				unset($_POST['uid'],$_POST['submit'],$_POST['file'],$_POST['OS'],$_POST['CPU']);
 				$vars = $_POST;
-				if(file_exists($_FILES['file']['tmp_name'])){$vars['file']=$_FILES['file']['name'];}	
 				$vars = $this->prepare_data($vars);
 				$this->db->update('applications',$entity,$vars);
 				header('Location:/apps');
@@ -68,11 +53,11 @@ class c_entityapps extends c_controller
 		}
 	}
 	private function delete($entity,$vars){
-		if($_SERVER['REQUEST_METHOD'] == 'GET'){
-		$title=$vars['title'];
-		$description=$vars['description'];
-		$author=$vars['author'];	
-		$this->content = $this->make_view('v/entityapps.php', array('title'=>$title,'description'=>$description,'author'=>$author,'uid'=>$this->uid));
+	if($_SERVER['REQUEST_METHOD'] == 'GET'){
+		$vars['OS'] = $this->parse_jsone($vars['OS']);
+		$vars['CPU'] = $this->parse_jsone($vars['CPU']);
+		$this->content = $this->make_view('v/entityapps.php', 
+		array('headline'=>'delete app','vars'=>$vars,'uid'=>$this->uid));
 		}else{
 			if($this->db->check_uid('authed',htmlspecialchars(trim($_POST['uid']))))
 			{
@@ -83,17 +68,27 @@ class c_entityapps extends c_controller
 		}
 	}
 	private function prepare_data($vars){
-		if(isset($vars['file'])) {
-			$up_file=pathinfo($vars['file']);
-			$ext = $up_file['extension'];
-			//‡Ò¯ËÂÌËÂ html ‰Îˇ ÚÂÒÚ‡
-			$extens=array('html');
-			if(in_array($ext,$extens)){
-				if(move_uploaded_file($vars['file'], '/docs/tmp_name'.$ext))
-				$file_path = '/docs/tmp_name'.$ext;
-			}else{ 
-				unlink($vars['file']);
+		if(count($_FILES['file'])>0) {
+			$extens_i=array('png','gif','jpg');
+			$extens_f=array('html');//—Ä–∞—Å—à–∏—Ä–µ–Ω–∏–µ html –¥–ª—è —Ç–µ—Å—Ç–∞
+		
+			for($i=0;$i<count($_FILES['file']);$i++)
+			{
+				$file = pathinfo($_FILES['file']['name'][$i]);
+				$ext = $file['extension'];
+				if(in_array($ext,$extens_i)){
+					if(move_uploaded_file($_FILES['file']['tmp_name'][$i], 'ico/'.$_FILES['file']['name'][$i]))
+						$vars['icon'] = 'ico/'.$_FILES['file']['name'][$i];
+					else
+						unlink($_FILES['file'][$i]);
+				}else if(in_array($ext,$extens_f)){
+					if(move_uploaded_file($_FILES['file']['tmp_name'][$i], 'docs/'.$_FILES['file']['name'][$i]))
+						$vars['file'] = 'docs/'.$_FILES['file']['name'][$i];
+					else
+						unlink($_FILES['file'][$i]);
+				}
 			}
+			
 		}
 			$os = array('10.6 Snow Leopard'=>'0','10.7 Lion'=>'0','10.8 Mountain Lion'=>'0');
 			if(isset($vars['OS'])){
@@ -105,7 +100,6 @@ class c_entityapps extends c_controller
 					foreach($cpu as $k=>$v){if($k == $vars['CPU'][$i]) $cpu[$k] = 1;}
 				}
 			}
-			$vars['file'] = $file_path;
 			$vars['OS'] = json_encode($os);
 			$vars['CPU'] = json_encode($cpu);
 			unset($vars['uid'],$vars['submit']);

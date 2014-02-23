@@ -1,12 +1,32 @@
 <a href="/apps/new/create">create</a>
 <?if(isset($vars)&&!empty($vars)):?>
 <table>
-	<?for($i=0;$i<count($vars);$i++):?>
-		<tr>
-			<td><?=$vars[$i]['title']?></td>
-			<td><a href="/apps/<?=$vars[$i]['id']?>/update">update</a></td>
-			<td><a href="/apps/<?=$vars[$i]['id']?>/delete">delete</a></td>
-		</tr>
-	<?endfor?>
+<tr>
+	<td><input id="all" type="checkbox" name="selected[]" value="all"/> Select all</td>
+	<td><div id="editselected">Edit selected</div></td>
+	<td><div id="deleteselected">Delete selected</div></td>
+</tr>
 </table>
-<?endif;?>
+	<table>
+		<tr>
+			<td></td>
+			<td></td>
+			<td>Title</td>
+			<td>Author</td>
+			<td>OS</td>
+			<td>Date</td>
+		</tr>
+		<?for($i=0;$i<count($vars);$i++):?>
+			<tr id="<?=$vars[$i]['id']?>" class="apps_select">
+				<td><input class="selected" type="checkbox" name="selected[]" value="<?=$vars[$i]['id']?>"/></td>
+				<td><img src="<?=BASE_URL?><?=$vars[$i]['icon']?>"></td>
+				<td><?=$vars[$i]['title']?></td>
+				<td><?=$vars[$i]['author']?></td>
+				<td><?=$vars[$i]['OS']?></td>
+				<td><?=$vars[$i]['renovation']?></td>
+			</tr>
+		<?endfor?>
+	</table>
+	<?endif;?>
+<div id="edit_app" class="dn"><td><a id="upd" href="#">update</a></td>
+				<td><a id="del" href="#">delete</a></td></div>

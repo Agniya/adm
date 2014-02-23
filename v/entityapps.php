@@ -82,8 +82,11 @@
 			<div class="clear"></div>	
 		</div>
 		<div class="form_block">
+			<label for="file">Ico</label></br>
+			<input type="file" class="small_input" name="file[]">
+			</br>
 			<label for="file">File</label></br>
-			<input type="file" class="small_input" id="file" name="file"><?=$vars['file']?>
+			<input type="file" class="small_input" name="file[]">
 			</br>
 			<label for="link">Link to download</label></br>
 			<textarea class="middle_input" id="link" name="link"><?=$vars['link']?></textarea></br>

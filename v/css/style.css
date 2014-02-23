@@ -48,3 +48,5 @@ label{font-size:20px;color:grey}
 .max_input{height:100px}
 .check{}
 .radio{}
+.dn{display:none}
+.edit_app{position:absolute;border: 1px solid black}

@@ -28,6 +28,7 @@ class m_db
 		 CREATE TABLE IF NOT EXISTS `applications` ( 
 		   `id` INT PRIMARY KEY AUTO_INCREMENT,
 		   `title` varchar(40) NOT NULL, 
+		   `icon` varchar(40) NOT NULL, 
 		   `OS` varchar(250) NOT NULL, 
 		   `CPU` varchar(250) NOT NULL, 
 		   `version` varchar(40) NOT NULL DEFAULT '', 
@@ -130,7 +131,8 @@ class m_db
 	}
 	public function update($table,$id,$values)
 	{
-   		$a = array_keys($values);
+   		var_dump($values);
+		$a = array_keys($values);
 		for($i=0;$i<count($a);$i++){
 			$a[$i] = $a[$i].'=?';
 		}
@@ -141,6 +143,7 @@ class m_db
 			array_push($params,mysql_real_escape_string(htmlspecialchars(trim($values[$k]))));
 		}
 		array_push($params,mysql_real_escape_string((htmlspecialchars(trim($id)))));
+	//	var_dump($params);
 		$result->execute($params);
         return true;
 	}
