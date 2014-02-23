@@ -131,8 +131,7 @@ class m_db
 	}
 	public function update($table,$id,$values)
 	{
-   		var_dump($values);
-		$a = array_keys($values);
+ 		$a = array_keys($values);
 		for($i=0;$i<count($a);$i++){
 			$a[$i] = $a[$i].'=?';
 		}
@@ -143,7 +142,6 @@ class m_db
 			array_push($params,mysql_real_escape_string(htmlspecialchars(trim($values[$k]))));
 		}
 		array_push($params,mysql_real_escape_string((htmlspecialchars(trim($id)))));
-	//	var_dump($params);
 		$result->execute($params);
         return true;
 	}

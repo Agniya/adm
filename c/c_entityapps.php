@@ -71,19 +71,23 @@ class c_entityapps extends c_controller
 		if(count($_FILES['file'])>0) {
 			$extens_i=array('png','gif','jpg');
 			$extens_f=array('html');//расширение html для теста
-		
+			$filename_i = 'ico/';
+			$filename_f = 'file/';
+			if(!file_exists($filename_i)) mkdir($filename_i, 0700, true);
+			if(!file_exists($filename_f)) mkdir($filename_f, 0700, true);
+			
 			for($i=0;$i<count($_FILES['file']);$i++)
 			{
 				$file = pathinfo($_FILES['file']['name'][$i]);
 				$ext = $file['extension'];
 				if(in_array($ext,$extens_i)){
-					if(move_uploaded_file($_FILES['file']['tmp_name'][$i], 'ico/'.$_FILES['file']['name'][$i]))
-						$vars['icon'] = 'ico/'.$_FILES['file']['name'][$i];
+					if(move_uploaded_file($_FILES['file']['tmp_name'][$i], $filename_i.$_FILES['file']['name'][$i]))
+						$vars['icon'] = $filename_i.$_FILES['file']['name'][$i];
 					else
 						unlink($_FILES['file'][$i]);
 				}else if(in_array($ext,$extens_f)){
-					if(move_uploaded_file($_FILES['file']['tmp_name'][$i], 'docs/'.$_FILES['file']['name'][$i]))
-						$vars['file'] = 'docs/'.$_FILES['file']['name'][$i];
+					if(move_uploaded_file($_FILES['file']['tmp_name'][$i], $filename_f.$_FILES['file']['name'][$i]))
+						$vars['file'] = $filename_f.$_FILES['file']['name'][$i];
 					else
 						unlink($_FILES['file'][$i]);
 				}
