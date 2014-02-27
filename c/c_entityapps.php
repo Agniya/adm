@@ -2,16 +2,31 @@
 session_start();
 class c_entityapps extends c_controller
 {
-	public function __construct($entity,$action)
+	public function __construct($entity_type,$entity,$action)
 	{
 		$this->db = new m_db;
 		$this->uid = $_SESSION['userid'];
+		if(!$this->uid) header('Location:/auth');
+		switch($entity_type) {
+			case "apps":
+			$this->entity_type='apps';
+			$this->tb='applications';
+			$this->view = 'v/entityapps.php';
+			$this->headline = 'app';
+			break;
+			case "users":
+			$this->entity_type='users';
+			$this->tb='users';
+			$this->view = 'v/entityusers.php';
+			$this->headline = 'user';
+			break;
+		}
 		switch($action) {
 			case "update":
-				$this->update($entity,$this->db->select('applications',$entity));
+				$this->update($entity,$this->db->select_type('id',$this->tb,$entity));
 				break;
 			case "delete":
-				$this->delete($entity,$this->db->select('applications',$entity));
+				$this->delete($entity,$this->db->select_type('id',$this->tb,$entity));
 				break;
 			case "create":
 				$this->create();
@@ -21,48 +36,63 @@ class c_entityapps extends c_controller
 	}
 	public function create(){
 	if($_SERVER['REQUEST_METHOD'] == 'GET'){
-		$this->content = $this->make_view('v/entityapps.php', array('headline'=>'new app',
-		'uid'=>$this->uid));
+		if($this->entity_type=='users')$vars['type']=$this->db->select_all('type');
+		$this->content = $this->make_view($this->view, array('headline'=>'new '.$this->headline,
+		'uid'=>$this->uid, 'vars'=>$vars));
 		}else{
 			if($this->db->check_uid('authed',$_POST['uid']))
 			{
 				$vars = $_POST;
 				unset($_POST['uid'],$_POST['submit']);
 				$vars = $this->prepare_data($vars);	
-				$this->db->create('applications', $vars);
-				header('Location:/apps');
+				$this->db->create($this->tb, $vars);
+				header('Location:/'.$this->entity_type);
 				exit();
 			}
 		}
 	}
 	private function update($entity,$vars){
 		if($_SERVER['REQUEST_METHOD'] == 'GET'){
-		$vars['OS'] = $this->parse_jsone($vars['OS']);
-		$vars['CPU'] = $this->parse_jsone($vars['CPU']);
-			$this->content = $this->make_view('v/entityapps.php', 
-			array('headline'=>'edit app','vars'=>$vars,'uid'=>$this->uid));
+		if($this->entity_type=='apps'){
+			$vars['OS'] = $this->parse_jsone($vars['OS']);
+			$vars['CPU'] = $this->parse_jsone($vars['CPU']);
+		}
+		else if($this->entity_type=='users')
+		{
+			$vars['user_type'] = $vars['type'];
+			$vars['type']=$this->db->select_all('type');
+		}
+			$this->content = $this->make_view($this->view, 
+			array('headline'=>'edit '.$this->headline,'vars'=>$vars,'uid'=>$this->uid));
 		}else{
 			if($this->db->check_uid('authed',htmlspecialchars(trim($_POST['uid']))))
 			{
 				$vars = $_POST;
 				$vars = $this->prepare_data($vars);
-				$this->db->update('applications',$entity,$vars);
-				header('Location:/apps');
+				$this->db->update($this->tb,$entity,$vars);
+				header('Location:/'.$this->entity_type);
 				exit();
 			}
 		}
 	}
 	private function delete($entity,$vars){
 	if($_SERVER['REQUEST_METHOD'] == 'GET'){
-		$vars['OS'] = $this->parse_jsone($vars['OS']);
-		$vars['CPU'] = $this->parse_jsone($vars['CPU']);
-		$this->content = $this->make_view('v/entityapps.php', 
-		array('headline'=>'delete app','vars'=>$vars,'uid'=>$this->uid));
+		if($this->entity_type=='apps'){
+			$vars['OS'] = $this->parse_jsone($vars['OS']);
+			$vars['CPU'] = $this->parse_jsone($vars['CPU']);
+		}
+		else if($this->entity_type=='users')
+		{
+			$vars['user_type'] = $vars['type'];
+			$vars['type']=$this->db->select_all('type');
+		}
+		$this->content = $this->make_view($this->view, 
+		array('headline'=>'delete '.$this->headline,'vars'=>$vars,'uid'=>$this->uid));
 		}else{
 			if($this->db->check_uid('authed',htmlspecialchars(trim($_POST['uid']))))
 			{
-				$this->db->delete('applications',$entity);
-				header('Location:/apps');
+				$this->db->delete($this->tb,$entity);
+				header('Location:/'.$this->entity_type);
 				exit();
 			}
 		}
@@ -93,19 +123,22 @@ class c_entityapps extends c_controller
 				}
 			}
 			
-		}
-			$os = array('10.6 Snow Leopard'=>'0','10.7 Lion'=>'0','10.8 Mountain Lion'=>'0');
-			if(isset($vars['OS'])){
-				foreach($os as $k=>$v){if($k == $vars['OS']) $os[$k] = 1;}
-			}
-			$cpu = array('32-bit CPU support'=>'0','64-bit CPU support'=>'0');
-			if(isset($vars['CPU'])){
-				for($i=0;$i<count($vars['CPU']);$i++){
-					foreach($cpu as $k=>$v){if($k == $vars['CPU'][$i]) $cpu[$k] = 1;}
+		}	
+		if(isset($vars['OS'])&&isset($vars['CPU']))
+		{
+				$os = array('10.6 Snow Leopard'=>'0','10.7 Lion'=>'0','10.8 Mountain Lion'=>'0');
+				if(isset($vars['OS'])){
+					foreach($os as $k=>$v){if($k == $vars['OS']) $os[$k] = 1;}
 				}
-			}
-			$vars['OS'] = json_encode($os);
-			$vars['CPU'] = json_encode($cpu);
+				$cpu = array('32-bit CPU support'=>'0','64-bit CPU support'=>'0');
+				if(isset($vars['CPU'])){
+					for($i=0;$i<count($vars['CPU']);$i++){
+						foreach($cpu as $k=>$v){if($k == $vars['CPU'][$i]) $cpu[$k] = 1;}
+					}
+				}
+				$vars['OS'] = json_encode($os);
+				$vars['CPU'] = json_encode($cpu);
+		}
 			unset($vars['uid'],$vars['submit']);
 		return $vars;
 	}

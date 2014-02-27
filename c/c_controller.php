@@ -21,7 +21,7 @@ class c_controller
 	{
 		$vars = array('css'=>$this->css,
 			'scripts'=>$this->scripts,
-			'content'=>$this->content);	
+			'content'=>$this->content,'uid'=>$this->uid );	
 		$page = $this->make_view('v/main.php', $vars);				
 		echo $page;
 	}

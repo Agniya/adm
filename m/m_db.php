@@ -3,6 +3,7 @@ class m_db
 {
 	protected $pdo;
 	private static $instance;	
+	protected $nw=false;
 	public static function Instance()
 	{
 		if (self::$instance == null)
@@ -20,6 +21,10 @@ class m_db
 		}
 		$this->create_apps();
 		$this->create_users();
+		$this->create_users_type();
+		$this->create_new_type('admin');
+		$this->create_new_type('origin');
+		
 		$this->create_authed();
 	}
 	public function create_apps()
@@ -56,8 +61,21 @@ class m_db
 		   `id` INT PRIMARY KEY AUTO_INCREMENT,
 		   `username` varchar(40) NOT NULL,
 		   `password` varchar(40) NOT NULL,
-		   `email` varchar(40) NOT NULL,
-		   `phone` varchar(40) NOT NULL
+		   `email` varchar(40) UNIQUE KEY NOT NULL,
+		   `phone` varchar(40) NOT NULL,
+		   `type_id` INT NOT NULL,
+		   `apps` text NOT NULL,
+		   `icon` varchar(40) NOT NULL
+		 )"; 
+		$result = $this->pdo->prepare($sql); 
+		$result->execute();   
+	}
+	public function create_users_type()
+	{
+		$sql = "
+		 CREATE TABLE IF NOT EXISTS `type` ( 
+		   `id` INT PRIMARY KEY AUTO_INCREMENT,
+		   `type_name` varchar(40) UNIQUE KEY NOT NULL
 		 )"; 
 		$result = $this->pdo->prepare($sql); 
 		$result->execute();   
@@ -68,10 +86,21 @@ class m_db
 		 CREATE TABLE IF NOT EXISTS `authed` ( 
 		   `id` INT PRIMARY KEY AUTO_INCREMENT,
 		   `id_user` INT NOT NULL,
-		   `uid` INT NOT NULL
+		   `uid` INT NOT NULL,
+		   `type` INT NOT NULL
 		 )"; 
 		$result = $this->pdo->prepare($sql); 
 		$result->execute();   
+	}
+	public function create_new_type($type_name)
+	{
+		$sql = "INSERT INTO `type` (type_name) VALUES(:type_name)";
+		$result = $this->pdo->prepare($sql); 
+		$params = array(
+            "type_name" => mysql_real_escape_string($type_name),
+	    );
+		$result->execute($params);
+		return $this->pdo->lastInsertId();
 	}
 	public function get_user($table,$email)
 	{
@@ -82,18 +111,6 @@ class m_db
 		$stmt->execute($params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (empty($result)) ? false : $result;
-	}
-	public function add_uid($table,$uid,$id_user){
-		$query = "INSERT INTO " . $table .
-                " (id_user, uid) " .
-                " VALUES (:id_user, :uid)";
-        $stmnt = $this->pdo->prepare($query);
-        $params = array(
-            "id_user" => mysql_real_escape_string($id_user),
-			"uid" => mysql_real_escape_string($uid)
-	    );
-        $stmnt->execute($params);
-        return $this->pdo->lastInsertId();
 	}
 	public function check_uid($table,$uid){
 		$query = "SELECT * FROM " .$table .
@@ -154,12 +171,12 @@ class m_db
 		$stmt->execute($params);
         return true;
 	}
-	public function select($table,$id)
+	public function select_type($where,$table,$id)
 	{
 		$query = "SELECT * FROM " .$table .
-        " WHERE id = :id";
+        " WHERE ".$where." = :".$where;
 		$stmt = $this->pdo->prepare($query);
-        $params = array("id" => mysql_real_escape_string($id));
+        $params = array($where => mysql_real_escape_string($id));
 		$stmt->execute($params);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (empty($result)) ? false : $result;
@@ -167,6 +184,14 @@ class m_db
 	public function select_all($table)
 	{
 		$query = "SELECT * FROM " .$table;
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute();
+      	$result = $stmt->fetchAll();
+        return (empty($result)) ? false : $result;
+	}
+	public function select_all_users()
+	{
+		$query = "SELECT*FROM users JOIN type ON(users.type_id = type.id)";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute();
       	$result = $stmt->fetchAll();

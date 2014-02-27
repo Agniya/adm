@@ -2,7 +2,7 @@
 <?if(isset($vars)&&!empty($vars)):?>
 <table>
 <tr>
-	<td><input id="all" type="checkbox" name="selected[]" value="all"/> Select all</td>
+	<td><input id="all_apps" type="checkbox" name="selected[]" value="all"/> Select all</td>
 	<td><div id="editselected">Edit selected</div></td>
 	<td><div id="deleteselected">Delete selected</div></td>
 </tr>
@@ -18,7 +18,7 @@
 		</tr>
 		<?for($i=0;$i<count($vars);$i++):?>
 			<tr id="<?=$vars[$i]['id']?>" class="apps_select">
-				<td><input class="selected" type="checkbox" name="selected[]" value="<?=$vars[$i]['id']?>"/></td>
+				<td><input class="selected apps_select" type="checkbox" name="selected[]" value="<?=$vars[$i]['id']?>"/></td>
 				<td><img src="<?=BASE_URL?><?=$vars[$i]['icon']?>"></td>
 				<td><?=$vars[$i]['title']?></td>
 				<td><?=$vars[$i]['author']?></td>
@@ -28,5 +28,5 @@
 		<?endfor?>
 	</table>
 	<?endif;?>
-<div id="edit_app" class="dn"><td><a id="upd" href="#">update</a></td>
+<div id="edit_block" class="dn"><td><a id="upd" href="#">update</a></td>
 				<td><a id="del" href="#">delete</a></td></div>

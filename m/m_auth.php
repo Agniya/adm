@@ -32,6 +32,8 @@ class m_auth
 	//регистрация
 	public function add_user($table,$vars=array()){
 		if($this->validation($vars))
+		$var=$this->db->select_type('type_name','type','origin');
+		$vars['type'] = $var['id'];
 		$this->db->create($table,$this->validation($vars));
 	}
 	//авторизация
@@ -39,9 +41,11 @@ class m_auth
 		$vars = $this->validation($vars);
 		if($vars){
 			$user_data = $this->db->get_user($table,$vars['email']);
-			if($user_data['password'] == $vars['password']){
+			$type=$this->db->select_type('type_name','type','admin');
+			if($user_data['password'] == $vars['password']&&$user_data['type']==$type['id']){
 				$uid=$this->make_userid();
-				if($this->add_uid('authed',$uid,$user_data['id'])) $_SESSION['userid'] = $uid;					
+				if($this->add_uid('authed',array('uid'=>$uid,'id_user'=>$user_data['id'],'type'=>$user_data['type']))) 
+					$_SESSION['userid'] = $uid;	
 			}
 		}
 		return $uid;
@@ -52,16 +56,12 @@ class m_auth
 		return $uid;
 	}
 	//запись uid в таблицу с авторизованными
-	private function add_uid($table,$uid,$id_user){
-		if($this->db->add_uid($table,$uid,$id_user))return true;
-	}
-	//поиск uid
-	private function check_uid($table,$uid){
-		if($this->db->check_uid($table,$uid)) return true;
+	private function add_uid($table,$vars){
+		if($this->db->create($table,$vars))return true;
 	}
 	//разлогинить
 	public function logout($uid){
-		if(!$this->db->check_uid($table,$uid)) return false;
+		if(!$this->db->check_uid('authed',$uid)) return false;
 		//убрать из таблицы сессий 
 		if($this->db->delete_uid('authed',$uid)){
 			unset($_SESSION['userid']);
