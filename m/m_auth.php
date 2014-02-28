@@ -42,7 +42,7 @@ class m_auth
 		if($vars){
 			$user_data = $this->db->get_user($table,$vars['email']);
 			$type=$this->db->select_type('type_name','type','admin');
-			if($user_data['password'] == $vars['password']&&$user_data['type']==$type['id']){
+			if($user_data['password'] == $vars['password']&&$user_data['type_id']==$type['id']){
 				$uid=$this->make_userid();
 				if($this->add_uid('authed',array('uid'=>$uid,'id_user'=>$user_data['id'],'type'=>$user_data['type']))) 
 					$_SESSION['userid'] = $uid;	

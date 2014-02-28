@@ -21,7 +21,10 @@ td{border: 1px solid black;width:200px;height:30px;font-size:14px;line-height:25
 	padding: 10px;
 	border-bottom: 1px solid grey;
 }
-.block40{float: left; width: 40%;padding:5px}				
+.block60{float: left; width: 60%;padding:5px}	
+.block40{float: left; width: 40%;padding:5px}	
+.block20{float:left; width:20%}
+.float{float:right;}			
 .clear{clear:both}	
 .padL{padding-left:60px;}
 radio{}							

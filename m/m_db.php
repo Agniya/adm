@@ -21,10 +21,10 @@ class m_db
 		}
 		$this->create_apps();
 		$this->create_users();
+		$this->create_category();
 		$this->create_users_type();
 		$this->create_new_type('admin');
 		$this->create_new_type('origin');
-		
 		$this->create_authed();
 	}
 	public function create_apps()
@@ -32,6 +32,7 @@ class m_db
 		$sql = "
 		 CREATE TABLE IF NOT EXISTS `applications` ( 
 		   `id` INT PRIMARY KEY AUTO_INCREMENT,
+		   `id_category`INT NOT NULL,
 		   `title` varchar(40) NOT NULL, 
 		   `icon` varchar(40) NOT NULL, 
 		   `OS` varchar(250) NOT NULL, 
@@ -54,6 +55,16 @@ class m_db
 		$result = $this->pdo->prepare($sql); 
 		$result->execute();
 	}	
+	public function create_category()
+	{
+		$sql = "
+		 CREATE TABLE IF NOT EXISTS `category` ( 
+		   `id` INT PRIMARY KEY AUTO_INCREMENT,
+		   `category_name` varchar(40) UNIQUE KEY NOT NULL
+		 )"; 
+		$result = $this->pdo->prepare($sql); 
+		$result->execute();   
+	}
 	public function create_users()
 	{
 		$sql = "
@@ -178,7 +189,17 @@ class m_db
 		$stmt = $this->pdo->prepare($query);
         $params = array($where => mysql_real_escape_string($id));
 		$stmt->execute($params);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+       	$result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (empty($result)) ? false : $result;
+	}
+	public function select_cat($where,$table,$id)
+	{
+		$query = "SELECT * FROM " .$table .
+        " WHERE ".$where." = :".$where;
+		$stmt = $this->pdo->prepare($query);
+        $params = array($where => mysql_real_escape_string($id));
+		$stmt->execute($params);
+    	$result = $stmt->fetchAll();
         return (empty($result)) ? false : $result;
 	}
 	public function select_all($table)

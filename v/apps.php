@@ -1,3 +1,16 @@
+<div class="block20">
+<ul>
+	<li><a href="/apps/all">All categories</a></li>
+	<?if(isset($categories)):?>
+	<?for($n=0;$n<count($categories);$n++):?>
+		<li><a href="/apps/<?=$categories[$n]['id']?>">
+		<?=$categories[$n]['category_name']?></a></li>
+	<?endfor;?>
+	<?endif;?>
+</ul>	
+</div>
+<div class="block60">
+<div class="">
 <a href="/apps/new/create">create</a>
 <?if(isset($vars)&&!empty($vars)):?>
 <table>
@@ -30,3 +43,6 @@
 	<?endif;?>
 <div id="edit_block" class="dn"><td><a id="upd" href="#">update</a></td>
 				<td><a id="del" href="#">delete</a></td></div>
+</div>
+</div>
+<div class="clear"></div>

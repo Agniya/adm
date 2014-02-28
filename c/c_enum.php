@@ -32,10 +32,10 @@ class c_enum extends c_controller
 						}
 					}
 				}
+				$categories = $this->db->select_all('category');
 			}
 		}
-		//var_dump($this->vars);
-		$this->content = $this->make_view('v/'.$entity.'.php',array('vars'=>$this->vars));		
+		$this->content = $this->make_view('v/'.$entity.'.php',array('categories'=>$categories,'vars'=>$this->vars));		
 	}
 	private function select_enum($entity){
 		$url_parse = parse_url($_SERVER['REQUEST_URI'],PHP_URL_PATH);
@@ -43,6 +43,16 @@ class c_enum extends c_controller
 		if(isset($uri_parts[1])&&!empty($uri_parts[1])&&isset($uri_parts[2])&&!empty($uri_parts[2]))
 		{
 			$this->entityapps = new c_entityapps($uri_parts[0],$uri_parts[1],$uri_parts[2]);
+		}
+		else if($entity=='apps'&&$uri_parts[1]=='all'){
+			$this->vars = $this->db->select_all('applications');
+			$this->show_enum($entity);
+			$this->render();
+		}
+		else if($entity=='apps'&&isset($uri_parts[1])&&!isset($uri_parts[2])){
+			$this->vars = $this->db->select_cat('id_category','applications',$uri_parts[1]);
+			$this->show_enum($entity);
+			$this->render();
 		}
 		else{
 			$this->show_enum($entity);
