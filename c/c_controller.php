@@ -3,8 +3,8 @@ session_start();
 class c_controller
 {
 	public $content='';
-	public $css=array("style");
-	public $scripts=array("jquery","selected");
+	public $css=array("style","style_mine","datepicker","updates","dist/css/bootstrap.min");
+	public $scripts=array("jquery","selected","jquery.min","bootstrap.min","bootstrap-datepicker","charCounter");
 	public $uid;
 	public function __construct()
 	{
@@ -14,15 +14,15 @@ class c_controller
 		}
 		else{ 
 			$this->uid = $_SESSION['userid'];
-			$this->render();
+			$this->render('v/main.php');
 		}
 	}
-	public function render()
+	public function render($fileName)
 	{
 		$vars = array('css'=>$this->css,
 			'scripts'=>$this->scripts,
 			'content'=>$this->content,'uid'=>$this->uid );	
-		$page = $this->make_view('v/main.php', $vars);				
+		$page = $this->make_view(/*'v/index.php'*/$fileName, $vars);				
 		echo $page;
 	}
 	public function make_view($fileName, $vars = array())

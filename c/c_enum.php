@@ -47,16 +47,16 @@ class c_enum extends c_controller
 		else if($entity=='apps'&&$uri_parts[1]=='all'){
 			$this->vars = $this->db->select_all('applications');
 			$this->show_enum($entity);
-			$this->render();
+			$this->render('v/index.php');
 		}
 		else if($entity=='apps'&&isset($uri_parts[1])&&!isset($uri_parts[2])){
 			$this->vars = $this->db->select_cat('id_category','applications',$uri_parts[1]);
 			$this->show_enum($entity);
-			$this->render();
+			$this->render('v/index.php');
 		}
 		else{
 			$this->show_enum($entity);
-			$this->render();
+			$this->render('v/index.php');
 		}		
 	}
 }

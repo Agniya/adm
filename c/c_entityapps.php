@@ -18,7 +18,7 @@ class c_entityapps extends c_controller
 			$this->entity_type='users';
 			$this->tb='users';
 			$this->view = 'v/entityusers.php';
-			$this->headline = 'user';
+			$this->headline = 'people';
 			break;
 		}
 		switch($action) {
@@ -32,13 +32,14 @@ class c_entityapps extends c_controller
 				$this->create();
 				break;
 		}
-		parent::__construct();
+	//	parent::__construct();
 	}
 	public function create(){
 	if($_SERVER['REQUEST_METHOD'] == 'GET'){
 		if($this->entity_type=='users')$vars['type']=$this->db->select_all('type');
 		$this->content = $this->make_view($this->view, array('headline'=>'new '.$this->headline,
 		'uid'=>$this->uid, 'vars'=>$vars));
+		$this->render('v/index.php');
 		}else{
 			if($this->db->check_uid('authed',$_POST['uid']))
 			{
@@ -64,6 +65,7 @@ class c_entityapps extends c_controller
 		}
 			$this->content = $this->make_view($this->view, 
 			array('headline'=>'edit '.$this->headline,'vars'=>$vars,'uid'=>$this->uid));
+			$this->render('v/index.php');
 		}else{
 			if($this->db->check_uid('authed',htmlspecialchars(trim($_POST['uid']))))
 			{
@@ -88,7 +90,8 @@ class c_entityapps extends c_controller
 		}
 		$this->content = $this->make_view($this->view, 
 		array('headline'=>'delete '.$this->headline,'vars'=>$vars,'uid'=>$this->uid));
-		}else{
+		$this->render('v/index.php');
+	}else{
 			if($this->db->check_uid('authed',htmlspecialchars(trim($_POST['uid']))))
 			{
 				$this->db->delete($this->tb,$entity);

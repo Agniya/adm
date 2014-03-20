@@ -10,7 +10,7 @@
 		<?endif;?>
 		<?if(isset($scripts)&& !empty($scripts)):?>
 			<?foreach($scripts as $script): ?>
-				<script type="text/javascript" src="<?=BASE_URL?>v/js/<?=$script; ?>.js"></script>
+				<script type="text/javascript" src="<?=BASE_URL?>v/js/<?=$script?>.js"></script>
 			<?endforeach; ?>
 		<?endif;?>
 	</head>

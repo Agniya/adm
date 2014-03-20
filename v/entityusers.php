@@ -1,4 +1,4 @@
-<div class="application">
+<div id="mainblock">
 <div class="headline"><?=$headline?></div>
 	<form method="POST" enctype="multipart/form-data">
 		<input name="uid" type="hidden" value="<?=$uid?>"></br>
